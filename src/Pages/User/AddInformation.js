@@ -9,6 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios';
 
 function AddCategory({ userIdForInfo, addInfoOpen, setAddInfoOpen }) {
+    const token = localStorage.getItem('token');
     const [open, setOpen] = useState(addInfoOpen);
     const [data, setData] = useState({
         title: '',
@@ -24,8 +25,12 @@ function AddCategory({ userIdForInfo, addInfoOpen, setAddInfoOpen }) {
         setData({ ...data, [field]: value });
     }
 
+    const config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
+
     const handleSubmit = () => {
-        axios.post(`https://localhost:7020/api/Information`, data)
+        axios.post(`https://localhost:7020/api/Information`, data,config)
         .then(response => {
             console.log(response);
             setAddInfoOpen(false);

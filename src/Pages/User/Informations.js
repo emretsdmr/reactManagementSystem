@@ -11,6 +11,7 @@ import AddInformation from "./AddInformation";
 import EditInformation from "./EditInformation";
 
 function Informations({ userIdForInfo, setUserIdForInfo, infoOpen, setInfoOpen }) {
+    const token = localStorage.getItem('token');
     const [open, setOpen] = useState(infoOpen);
     const [informations, setInformations] = useState();
     const [toBeEdited, setToBeEdited] = useState();
@@ -35,7 +36,7 @@ function Informations({ userIdForInfo, setUserIdForInfo, infoOpen, setInfoOpen }
     }
 
     const handleDelete = () => {
-        axios.delete(`https://localhost:7020/api/Information?infoId=${toBeDeleted}`)
+        axios.delete(`https://localhost:7020/api/Information?infoId=${toBeDeleted}`,config)
             .then(response => {
                 setToBeDeleted(null);
                 window.location.reload();
@@ -45,8 +46,12 @@ function Informations({ userIdForInfo, setUserIdForInfo, infoOpen, setInfoOpen }
             });
     }
 
+    const config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
+
     useEffect(() => {
-        axios.get(`https://localhost:7020/api/Information/${userIdForInfo}`)
+        axios.get(`https://localhost:7020/api/Information/${userIdForInfo}`,config)
             .then(response => {
                 setInformations(response.data);
             })

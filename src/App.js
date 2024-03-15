@@ -105,9 +105,9 @@ function App() {
           </> :
           <>
             <br /><br/><br/>            
-            <Link to="/login"><Button variant="warning">Login</Button></Link>
+            <Link to="/login"><Button variant="success">Login</Button></Link>
             &nbsp;
-            <Link to="/register"><Button variant="warning">Register</Button></Link>
+            <Link to="/register"><Button variant="secondary">Register</Button></Link>
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />

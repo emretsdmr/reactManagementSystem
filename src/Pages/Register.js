@@ -7,13 +7,21 @@ import Alert from 'react-bootstrap/Alert';
 
 function Register() {
     const [alertOpen, setAlertOpen] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(true)
     const [data, setData] = useState({
         email: '',
         password: '',
     });
 
+    const validData = () => {
+        if (data.email.length && data.password.length > 6) {
+            setIsDisabled(false);
+        }
+    }
+
     const handleChangeValue = (field, value) => {
         setData({ ...data, [field]: value });
+        validData();
     }
 
     const handleRegister = () => {
@@ -37,7 +45,7 @@ function Register() {
                 <Alert variant={alertOpen}>
                     You've successfully registered!
                 </Alert>}
-                {alertOpen == "danger" &&
+            {alertOpen == "danger" &&
                 <Alert variant={alertOpen}>
                     Invalid email or password!
                 </Alert>}
@@ -56,7 +64,7 @@ function Register() {
                                 <Form.Control type="password" placeholder="Password"
                                     onChange={(e) => handleChangeValue("password", e.target.value)} />
                             </Form.Group>
-                            <Button onClick={handleRegister} variant="primary">Register</Button>
+                            <Button disabled={isDisabled} onClick={handleRegister} variant="primary">Register</Button>
                         </Form>
                     </Card.Text>
                 </Card.Body>

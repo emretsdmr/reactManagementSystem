@@ -9,6 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios';
 
 function EditInformations({setEditInfoOpen, editInfoOpen, toBeEdited}) {
+    const token = localStorage.getItem('token');
     const [open, setOpen] = useState(editInfoOpen);
     const [data, setData] = useState({        
         title: toBeEdited.title,
@@ -19,8 +20,13 @@ function EditInformations({setEditInfoOpen, editInfoOpen, toBeEdited}) {
         setData({ ...data, [field]: value });
     }    
 
+    const config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
+
+
     const handleSubmit = () => {         
-        axios.put(`https://localhost:7020/api/Information?infoId=${toBeEdited.id}`, data)    
+        axios.put(`https://localhost:7020/api/Information?infoId=${toBeEdited.id}`, data,config)    
         .then(response => {            
           console.log(response);
           setOpen(false);
