@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
-import Table from 'react-bootstrap/Table';
 import axios from 'axios';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -80,31 +86,37 @@ function UserRoles({ userIdForInfo, setUserIdForInfo, roleOpen, setRoleOpen }) {
             <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
                 <DialogTitle>Are you sure?</DialogTitle>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => setDeleteOpen(false)}>No</Button>
-                    <Button variant="contained" onClick={handleDelete}>Yes</Button>
+                    <Button variant="contained" color='error' onClick={() => setDeleteOpen(false)}>No</Button>
+                    <Button variant="contained" color='success' onClick={handleDelete}>Yes</Button>
                 </DialogActions>
             </Dialog>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Roles</DialogTitle>
                 <div className='box'>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Role</th>
-                                <th>Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {roles?.map(role => (
-                                <tr>
-                                    <td>{role.roleName}</td>
-                                    <td><button onClick={() => deleteRole(role.roleId)}><DeleteIcon /></button></td>
-                                </tr>
-                            ))}
-                        </tbody>
-                        <br />
-                        <Button variant="outlined" onClick={() => setAddUserRoleOpen(true)}>Add Role</Button>
-                    </Table>
+                    <Button variant="outlined" color='inherit' onClick={() => setAddUserRoleOpen(true)}>+</Button>
+                    <TableContainer component={Paper}>
+                        <Table aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Role</TableCell>
+                                    <TableCell>Delete</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {roles?.map(role => (
+                                    <TableRow
+                                        key={role.roleName}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {role.roleName}
+                                        </TableCell>
+                                        <TableCell><Button color='inherit' onClick={() => deleteRole(role.roleId)} ><DeleteIcon /></Button></TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </div>
             </Dialog >
         </div >

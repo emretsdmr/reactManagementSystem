@@ -3,25 +3,19 @@ import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import axios from 'axios';
 import { useState } from 'react';
+import ReCAPTCHA from "react-google-recaptcha";
 import Alert from 'react-bootstrap/Alert';
 
 function Register() {
     const [alertOpen, setAlertOpen] = useState(false);
-    const [isDisabled, setIsDisabled] = useState(true)
+    const [isCaptchaSuccessful, setIsCaptchaSuccess] = useState(false);
     const [data, setData] = useState({
         email: '',
         password: '',
     });
 
-    const validData = () => {
-        if (data.email.length && data.password.length > 6) {
-            setIsDisabled(false);
-        }
-    }
-
     const handleChangeValue = (field, value) => {
         setData({ ...data, [field]: value });
-        validData();
     }
 
     const handleRegister = () => {
@@ -39,6 +33,10 @@ function Register() {
             });
     }
 
+    function onChange(value) {
+        setIsCaptchaSuccess(true);
+    }
+
     return (
         <div className='box'>
             {alertOpen == "success" &&
@@ -49,7 +47,7 @@ function Register() {
                 <Alert variant={alertOpen}>
                     Invalid email or password!
                 </Alert>}
-            <Card bg="light" style={{ width: '18rem' }}>
+            <Card bg="light" style={{ width: '22rem' }}>
                 <Card.Header>Register</Card.Header>
                 <Card.Body>
                     <Card.Text>
@@ -64,7 +62,12 @@ function Register() {
                                 <Form.Control type="password" placeholder="Password"
                                     onChange={(e) => handleChangeValue("password", e.target.value)} />
                             </Form.Group>
-                            <Button disabled={isDisabled} onClick={handleRegister} variant="primary">Register</Button>
+                            <ReCAPTCHA                                
+                                sitekey="6LdeWJcpAAAAAPliznncDgjSE38TDF7yS6wAm1vv"
+                                onChange={onChange}
+                            />                           
+                            <br/>
+                            <Button disabled={!isCaptchaSuccessful} onClick={handleRegister} variant="primary">Register</Button>
                         </Form>
                     </Card.Text>
                 </Card.Body>

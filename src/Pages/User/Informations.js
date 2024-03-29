@@ -1,14 +1,20 @@
 import { useState, useEffect } from "react";
-import Table from 'react-bootstrap/Table';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogActions from '@mui/material/DialogActions';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
+import Button from '@mui/material/Button';
 import AddInformation from "./AddInformation";
 import EditInformation from "./EditInformation";
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
 
 function Informations({ userIdForInfo, setUserIdForInfo, infoOpen, setInfoOpen }) {
     const token = localStorage.getItem('token');
@@ -36,7 +42,7 @@ function Informations({ userIdForInfo, setUserIdForInfo, infoOpen, setInfoOpen }
     }
 
     const handleDelete = () => {
-        axios.delete(`https://localhost:7020/api/Information?infoId=${toBeDeleted}`,config)
+        axios.delete(`https://localhost:7020/api/Information?infoId=${toBeDeleted}`, config)
             .then(response => {
                 setToBeDeleted(null);
                 window.location.reload();
@@ -51,7 +57,7 @@ function Informations({ userIdForInfo, setUserIdForInfo, infoOpen, setInfoOpen }
     };
 
     useEffect(() => {
-        axios.get(`https://localhost:7020/api/Information/${userIdForInfo}`,config)
+        axios.get(`https://localhost:7020/api/Information/${userIdForInfo}`, config)
             .then(response => {
                 setInformations(response.data);
             })
@@ -84,36 +90,42 @@ function Informations({ userIdForInfo, setUserIdForInfo, infoOpen, setInfoOpen }
                     <Button variant="contained" onClick={handleDelete}>Yes</Button>
                 </DialogActions>
             </Dialog>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog maxWidth="md" fullWidth="true" open={open} onClose={handleClose}>
                 <DialogTitle>Informations</DialogTitle>
                 {informations?.length > 0 ?
-                    <div className="box">
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Description</th>
-                                    <th>Edit</th>
-                                    <th>Delete</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {informations?.map(info => (
-                                    <tr>
-                                        <td>{info.title}</td>
-                                        <td>{info.description}</td>
-                                        <td><button onClick={() => editInfo(info)}><EditIcon /></button></td>
-                                        <td><button onClick={() => deleteInfo(info.id)}><DeleteIcon /></button></td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                            <br />
-                            <Button variant="outlined" onClick={() => setAddInfoOpen(true)}>Add Info</Button>
-                        </Table>
+                    <div className="adminInfo">
+                        <Button variant="outlined" color='inherit' onClick={() => setAddInfoOpen(true)}>+</Button>
+                        <br/><br/>
+                        <TableContainer sx={{ width: 700, wordBreak: "break-word" }} component={Paper}>
+                            <Table aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell width={100}>Title</TableCell>
+                                        <TableCell width={400}>Description</TableCell>
+                                        <TableCell align="right">Edit</TableCell>
+                                        <TableCell>Delete</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {informations?.map(information => (
+                                        <TableRow
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {information.title}
+                                            </TableCell>
+                                            <TableCell>{information.description}</TableCell>
+                                            <TableCell align="right"><Button color='inherit' onClick={() => editInfo(information)}><EditIcon /></Button></TableCell>
+                                            <TableCell><Button color='inherit' onClick={() => deleteInfo(information.id)}><DeleteIcon /></Button></TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </div>
                     :
                     <div className="box"><h5>No informations found!</h5><br />
-                        <Button variant="outlined" onClick={() => setAddInfoOpen(true)}>Add Info</Button></div>
+                        <Button variant="outlined" onClick={() => setAddInfoOpen(true)}>+</Button></div>
                 }
             </Dialog>
         </div>

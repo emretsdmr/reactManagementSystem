@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import Table from 'react-bootstrap/Table';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import Informations from './Informations';
 import UserRoles from '../UserRoles';
@@ -19,6 +25,7 @@ function Users() {
     const token = localStorage.getItem('token');
     const [users, setUsers] = useState();
     const [filteredUser, setFilteredUser] = useState();
+    const [filteredUsers, setFilteredUsers] = useState([]);
     const [infoOpen, setInfoOpen] = useState(false);
     const [roleOpen, setRoleOpen] = useState(false);
     const [toBeDeleted, setToBeDeleted] = useState();
@@ -52,8 +59,12 @@ function Users() {
 
     }
 
+    const config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
+
     const handleDelete = () => {
-        axios.delete(`https://localhost:7020/api/User?userId=${toBeDeleted}`)
+        axios.delete(`https://localhost:7020/api/User?userId=${toBeDeleted}`, config)
             .then(response => {
                 setToBeDeleted(null);
                 window.location.reload();
@@ -61,6 +72,23 @@ function Users() {
             .catch(error => {
                 console.log(error);
             });
+    }
+
+    const findUserT = (value) => {
+        users.map(user => {
+            ;debugger
+            if ((user.userName).includes(value)) {                
+                filteredUsers.map(x => {       
+                    ;debugger             
+                    if(user.userName !== x.userName){                        
+                        filteredUsers.push({user});
+                    }
+                })                
+            }
+            if (value == "") {
+                setFilteredUsers();
+            }
+        })
     }
 
     const findUser = (value) => {
@@ -75,12 +103,8 @@ function Users() {
     }
 
     const handleChangeValue = (value) => {
-        findUser(value);
+        findUserT(value);
     }
-
-    const config = {
-        headers: { Authorization: `Bearer ${token}` }
-    };
 
     useEffect(() => {
         axios.get(`https://localhost:7020/api/User`, config)
@@ -126,8 +150,8 @@ function Users() {
                 <Dialog open={deleteUserOpen && toBeDeleted} onClose={() => setToBeDeleted(null)}>
                     <DialogTitle>Are you sure to delete this user?</DialogTitle>
                     <DialogActions>
-                        <Button variant="contained" onClick={() => setToBeDeleted(null)}>No</Button>
-                        <Button variant="contained" onClick={handleDelete}>Yes</Button>
+                        <Button color="error" variant="contained" onClick={() => setToBeDeleted(null)}>No</Button>
+                        <Button color="success" variant="contained" onClick={handleDelete}>Yes</Button>
                     </DialogActions>
                 </Dialog>
                 <InputGroup size="sm" className="mb-3">
@@ -137,47 +161,55 @@ function Users() {
                         aria-label="Small"
                         aria-describedby="inputGroup-sizing-sm"
                     />
-                    <InputGroup.Text id="inputGroup-sizing-sm"><button onClick={() => setFilteredUser(null)}><RestartAltIcon /></button></InputGroup.Text>
+                    <InputGroup.Text id="inputGroup-sizing-sm"><Button color="inherit" onClick={() => setFilteredUser(null)}><RestartAltIcon /></Button></InputGroup.Text>
                 </InputGroup>
-                <Table striped bordered hover>
-                    <thead>
-                        <tr>
-                            <th>id</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Informations</th>
-                            <th>Role(s)</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredUser ?
-                            <>
-                                <tr>
-                                    <td>{filteredUser.id}</td>
-                                    <td>{filteredUser.userName}</td>
-                                    <td>{filteredUser.email}</td>
-                                    <td><button onClick={() => handleInfo(filteredUser.id)}>{filteredUser.informations.length}</button></td>
-                                    <td><button onClick={() => handleRoles(filteredUser.id)}><SupervisedUserCircleIcon /></button></td>
-                                    <td><button onClick={() => deleteUser(filteredUser.id)}><DeleteIcon /></button></td>
-                                </tr>
-                            </>
-                            :
-                            <>
-                                {users?.map(user => (
-                                    <tr>
-                                        <td>{user.id}</td>
-                                        <td>{user.userName}</td>
-                                        <td>{user.email}</td>
-                                        <td><button onClick={() => handleInfo(user.id)}>{user.informations.length}</button></td>
-                                        <td><button onClick={() => handleRoles(user.id)}><SupervisedUserCircleIcon /></button></td>
-                                        <td><button onClick={() => deleteUser(user.id)}><DeleteIcon /></button></td>
-                                    </tr>
+                <TableContainer component={Paper}>
+                    <Table aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Email</TableCell>
+                                <TableCell>Informations</TableCell>
+                                <TableCell>Role(s)</TableCell>
+                                <TableCell>Delete</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {filteredUser ?
+                                <>
+                                    <TableRow
+                                        key={filteredUser.id}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {filteredUser.userName}
+                                        </TableCell>
+                                        <TableCell>{filteredUser.userName}</TableCell>
+                                        <TableCell>{filteredUser.email}</TableCell>
+                                        <TableCell><button onClick={() => handleInfo(filteredUser.id)}>{filteredUser.informations.length}</button></TableCell>
+                                        <TableCell><button onClick={() => handleRoles(filteredUser.id)}><SupervisedUserCircleIcon /></button></TableCell>
+                                        <TableCell><button onClick={() => deleteUser(filteredUser.id)}><DeleteIcon /></button></TableCell>
+                                    </TableRow>
+                                </> :
+                                <>{users?.map(user => (
+                                    <TableRow
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {user.id}
+                                        </TableCell>
+                                        <TableCell>{user.email}</TableCell>
+                                        <TableCell><Button color='inherit' onClick={() => handleInfo(user.id)}>{user.informations.length}</Button></TableCell>
+                                        <TableCell><Button color='inherit' onClick={() => handleRoles(user.id)}><SupervisedUserCircleIcon /></Button></TableCell>
+                                        <TableCell><Button color='inherit' onClick={() => deleteUser(user.id)}><DeleteIcon /></Button></TableCell>
+                                    </TableRow>
                                 ))}
-                            </>
-                        }
-                    </tbody>
-                </Table></>
+                                </>
+                            }
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </>
                 :
                 <>
                     <br />

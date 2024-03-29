@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import Table from 'react-bootstrap/Table';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -36,7 +42,7 @@ function Roles() {
     }
 
     const handleDelete = () => {
-        axios.delete(`https://localhost:7020/api/Role?id=${toBeDeleted}`,config)
+        axios.delete(`https://localhost:7020/api/Role?id=${toBeDeleted}`, config)
             .then(response => {
                 setToBeDeleted(null);
                 window.location.reload();
@@ -51,7 +57,7 @@ function Roles() {
     };
 
     useEffect(() => {
-        axios.get(`https://localhost:7020/api/Role`,config)
+        axios.get(`https://localhost:7020/api/Role`, config)
             .then(response => {
                 setIsAuthorized(true);
                 setRoles(response.data);
@@ -65,7 +71,7 @@ function Roles() {
     }, [])
 
     return (
-        <div className='content'>
+        <div className='roles'>
             {isAuthorized ?
                 <>
                     <br />
@@ -88,30 +94,35 @@ function Roles() {
                     <Dialog open={deleteOpen && toBeDeleted} onClose={() => setToBeDeleted(null)}>
                         <DialogTitle>Are you sure?</DialogTitle>
                         <DialogActions>
-                            <Button variant="contained" onClick={() => setToBeDeleted(null)}>No</Button>
-                            <Button variant="contained" onClick={handleDelete}>Yes</Button>
+                            <Button color='error' variant="contained" onClick={() => setToBeDeleted(null)}>No</Button>
+                            <Button color='success' variant="contained" onClick={handleDelete}>Yes</Button>
                         </DialogActions>
                     </Dialog>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Edit</th>
-                                <th>Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {roles?.map(role => (
-                                <tr>
-                                    <td>{role.name}</td>
-                                    <td><button onClick={() => editRole(role)}><EditIcon /></button></td>
-                                    <td><button onClick={() => deleteRole(role.id)} ><DeleteIcon /></button></td>
-                                </tr>
-                            ))}
-                        </tbody>
-                        <br />
-                        <Button variant="contained" onClick={() => setAddRoleOpen(true)}>Add Role</Button>
-                    </Table>
+                    <TableContainer component={Paper}>
+                        <Table aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell>Edit</TableCell>
+                                    <TableCell>Delete</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {roles?.map(role => (
+                                    <TableRow
+                                        key={role.name}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {role.name}
+                                        </TableCell>
+                                        <TableCell><Button color='inherit' onClick={() => editRole(role)}><EditIcon /></Button></TableCell>
+                                        <TableCell><Button color='inherit' onClick={() => deleteRole(role.id)} ><DeleteIcon /></Button></TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </>
                 :
                 <>

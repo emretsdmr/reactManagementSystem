@@ -7,11 +7,12 @@ import Register from './Pages/Register';
 import Users from './Pages/User/Users';
 import Roles from './Pages/Roles/Roles';
 import MyInformations from './Pages/MyInformations';
-import Profile from './Pages/Profile';
+import Profile from './Pages/Profile/Profile';
 import { AuthContext } from "./Auth/Auth.js";
 import Button from 'react-bootstrap/Button';
 import { Routes, Route, Link } from "react-router-dom";
 import Header from './Layout/Header';
+import video from './Layout/circuit.mp4';
 
 const isAuthenticated = !!localStorage.getItem('token');
 const expireDate = localStorage.getItem("expireDate");
@@ -53,6 +54,7 @@ function App() {
   const [authTokens, setAuthTokens] = useState(
     localStorage.getItem("token") || ""
   );
+  var userId = localStorage.getItem("userId");
 
   const setTokens = (data) => {
     localStorage.setItem("token", JSON.stringify(data));
@@ -92,27 +94,38 @@ function App() {
   return (
     <AuthContext.Provider value={{ state, authTokens, dispatch, setAuthTokens: setTokens }}>
       <div className="App">
-      <Header />
         {isAuthenticated ?
           <>
-          <Sidebar />            
+            <Header userId={userId} />
+            <Sidebar />
             <Routes>
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile" element={<Profile userId={userId} />} />
               <Route path="/users" element={<Users />} />
               <Route path="/roles" element={<Roles />} />
               <Route path="/myinformations" element={<MyInformations />} />
             </Routes>
           </> :
           <>
-            <br /><br/><br/>            
-            <Link to="/login"><Button variant="success">Login</Button></Link>
-            &nbsp;
-            <Link to="/register"><Button variant="secondary">Register</Button></Link>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-            </Routes>
-          </>}
+            <div className="bgContainer">
+              <div className="overlay">
+                <video src={video} autoPlay loop muted />
+                <div className="container">
+                  <br/>
+                  <Link to="/login"><Button variant="success">Login</Button></Link>
+                  &nbsp;
+                  <Link to="/register"><Button variant="secondary">Register</Button></Link>
+                  <br /><br />
+                  <h2 className="wlc">WELCOME TO</h2>
+                  <h1 className="title">MANAGEMENT SYSTEM</h1>
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                  </Routes>
+                </div>
+              </div>
+            </div>
+          </>
+        }
       </div>
     </AuthContext.Provider>
   );

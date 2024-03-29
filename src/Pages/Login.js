@@ -43,7 +43,6 @@ function Login() {
 
     function onChange(value) {
         setIsCaptchaSuccess(true);
-        //console.log("Captcha value:", value);
     }
 
     return (

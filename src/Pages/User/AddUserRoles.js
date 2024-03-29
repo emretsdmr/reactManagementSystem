@@ -32,12 +32,10 @@ function AddUserRoles({ rolesToAdd, userIdForInfo, addUserRoleOpen, setAddUserRo
     const handleSubmit = () => {    
         axios.post(`https://localhost:7020/api/Role/UserRole`, data,config)
             .then(response => {
-                ;debugger
                 setAddUserRoleOpen(false);
                 window.location.reload();
             })
             .catch(error => {
-                ;debugger
                 console.log(error);
                 setAlertOpen(true);
                 setAlertMessage(error.response.data);
@@ -48,7 +46,9 @@ function AddUserRoles({ rolesToAdd, userIdForInfo, addUserRoleOpen, setAddUserRo
     return (
         <div>
             <Dialog open={open} onClose={handleClose}>
-                
+           {alertOpen && <Alert variant="danger">
+                        {alertMessage}
+                    </Alert>}
                 <DialogTitle>Add Role</DialogTitle>
                 <DialogContent>
                     Role: <br />

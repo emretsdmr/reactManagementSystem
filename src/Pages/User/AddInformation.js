@@ -1,16 +1,18 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
+import Alert from 'react-bootstrap/Alert';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios';
 
 function AddCategory({ userIdForInfo, addInfoOpen, setAddInfoOpen }) {
     const token = localStorage.getItem('token');
     const [open, setOpen] = useState(addInfoOpen);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState();
     const [data, setData] = useState({
         title: '',
         description: '',
@@ -30,20 +32,25 @@ function AddCategory({ userIdForInfo, addInfoOpen, setAddInfoOpen }) {
     };
 
     const handleSubmit = () => {
-        axios.post(`https://localhost:7020/api/Information`, data,config)
-        .then(response => {
-            console.log(response);
-            setAddInfoOpen(false);
-            window.location.reload();
-        })
-        .catch(error => {
-            console.log(error);
-        });
+        axios.post(`https://localhost:7020/api/Information`, data, config)
+            .then(response => {
+                console.log(response);
+                setAddInfoOpen(false);
+                window.location.reload();
+            })
+            .catch(error => {
+                console.log(error);
+                setAlertOpen(true);
+                setAlertMessage(error.response.data);
+            });
     }
 
     return (
         <div>
             <Dialog open={open} onClose={handleClose}>
+                {alertOpen && <Alert variant="danger">
+                    {alertMessage}
+                </Alert>}
                 <DialogTitle>Add Information</DialogTitle>
                 <DialogContent>
                     <TextField
@@ -68,8 +75,8 @@ function AddCategory({ userIdForInfo, addInfoOpen, setAddInfoOpen }) {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button variant="contained" onClick={handleSubmit}>Add</Button>
+                    <Button color='inherit' onClick={handleClose}>Cancel</Button>
+                    <Button color='success' variant="contained" onClick={handleSubmit}>Add</Button>
                 </DialogActions>
             </Dialog>
         </div>
