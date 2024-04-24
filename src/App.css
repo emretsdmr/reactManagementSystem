@@ -67,7 +67,15 @@
   margin-left: auto;
   margin-right: auto;
   padding: 30px 16px;
-  width: 830px;
+  width: 500px;
+}
+
+.editPerm{
+  margin-left: auto;
+  margin-right: auto;
+  padding: 30px 16px;
+  padding-left:50px;
+  width: 300px;
 }
 
 .informations {

@@ -33,7 +33,8 @@ function Sidebar() {
         ['Profile', '/profile'],
         ['Users', '/users'],
         ['Roles', '/roles'],
-        ['My Infos', '/myinformations']
+        ['My Infos', '/myinformations'],
+        ['Permissions', '/permissions']
     ];
 
 

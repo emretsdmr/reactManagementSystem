@@ -16,6 +16,8 @@ import DialogActions from '@mui/material/DialogActions';
 import AddRole from './AddRole';
 import EditRole from './EditRole';
 import Alert from 'react-bootstrap/Alert';
+import KeyIcon from '@mui/icons-material/Key';
+import EditPermission from './EditPermission';
 
 function Roles() {
     const token = localStorage.getItem('token');
@@ -26,6 +28,9 @@ function Roles() {
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [toBeDeleted, setToBeDeleted] = useState(null);
     const [isAuthorized, setIsAuthorized] = useState(false);
+    const [editPermOpen, setEditPermOpen] = useState(false);
+    const [toBeEditedPerm, setToBeEditedPerm] = useState();
+    const [claims, setClaims] = useState([]);
 
     const addRole = () => {
         setAddRoleOpen(true);
@@ -34,6 +39,19 @@ function Roles() {
     const editRole = (role) => {
         setEditRoleOpen(true);
         setToBeEdited(role);
+    }
+
+    const editPermission = (id) => {
+        setToBeEditedPerm(id);
+        axios.get(`https://localhost:7020/api/Permission?roleId=${id}`, config)
+            .then(response => {
+                response.data.map(d => {      
+                    setClaims(f => [...f,  d.value ])});                    
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        setEditPermOpen(true);
     }
 
     const deleteRole = (id) => {
@@ -68,7 +86,7 @@ function Roles() {
                     setIsAuthorized(false);
                 }
             });
-    }, [])
+    }, []);
 
     return (
         <div className='roles'>
@@ -91,6 +109,15 @@ function Roles() {
                             toBeEdited={toBeEdited}
                         />
                     }
+                    {editPermOpen &&
+                        <EditPermission
+                            setEditPermOpen={setEditPermOpen}
+                            editPermOpen={editPermOpen}
+                            toBeEditedPerm={toBeEditedPerm}
+                            claims={claims}
+                            setClaims={setClaims}
+                        />
+                    }
                     <Dialog open={deleteOpen && toBeDeleted} onClose={() => setToBeDeleted(null)}>
                         <DialogTitle>Are you sure?</DialogTitle>
                         <DialogActions>
@@ -102,9 +129,10 @@ function Roles() {
                         <Table aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Name</TableCell>
-                                    <TableCell>Edit</TableCell>
-                                    <TableCell>Delete</TableCell>
+                                    <TableCell align="left">Name</TableCell>
+                                    <TableCell align="right">Edit Name</TableCell>
+                                    <TableCell align="right">Permissions</TableCell>
+                                    <TableCell align="right">Delete</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -116,8 +144,9 @@ function Roles() {
                                         <TableCell component="th" scope="row">
                                             {role.name}
                                         </TableCell>
-                                        <TableCell><Button color='inherit' onClick={() => editRole(role)}><EditIcon /></Button></TableCell>
-                                        <TableCell><Button color='inherit' onClick={() => deleteRole(role.id)} ><DeleteIcon /></Button></TableCell>
+                                        <TableCell align="right"><Button color='inherit' onClick={() => editRole(role)}><EditIcon /></Button></TableCell>
+                                        <TableCell align="right"><Button color='inherit' onClick={() => editPermission(role.id)}><KeyIcon /></Button></TableCell>
+                                        <TableCell align="right"><Button color='inherit' onClick={() => deleteRole(role.id)} ><DeleteIcon /></Button></TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

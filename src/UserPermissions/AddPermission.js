@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+/*import { useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -7,13 +7,14 @@ import Button from '@mui/material/Button';
 import Alert from 'react-bootstrap/Alert';
 import axios from 'axios';
 
-function AddUserRoles({ rolesToAdd, userIdForInfo, addUserRoleOpen, setAddUserRoleOpen }) {
+function AddPermission() {
     const token = localStorage.getItem('token');
     const [open, setOpen] = useState(addUserRoleOpen);
+    const [permValues, setPermValues] = useState(['ManageUser','ManageRoles','ManageInformations'])
     const [alertOpen, setAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState();
     const [data, setData] = useState({
-        roleId: rolesToAdd[0].id,
+        roleId: permValues[0],
         userId: userIdForInfo
     });
 
@@ -42,13 +43,11 @@ function AddUserRoles({ rolesToAdd, userIdForInfo, addUserRoleOpen, setAddUserRo
             });
     }
 
-
-    return (
-        <div>
-            <Dialog open={open} onClose={handleClose}>
-                {alertOpen && <Alert variant="danger">
-                    {alertMessage}
-                </Alert>}
+    return ( 
+        <Dialog open={open} onClose={handleClose}>
+           {alertOpen && <Alert variant="danger">
+                        {alertMessage}
+                    </Alert>}
                 <DialogTitle>Add Role</DialogTitle>
                 <DialogContent>
                     Role: <br />
@@ -63,8 +62,7 @@ function AddUserRoles({ rolesToAdd, userIdForInfo, addUserRoleOpen, setAddUserRo
                     <Button variant="contained" onClick={handleSubmit}>Add Role</Button>
                 </DialogActions>
             </Dialog>
-        </div>
-    );
+     );
 }
 
-export default AddUserRoles;
+export default AddPermission;*/

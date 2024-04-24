@@ -13,6 +13,7 @@ import Button from 'react-bootstrap/Button';
 import { Routes, Route, Link } from "react-router-dom";
 import Header from './Layout/Header';
 import video from './Layout/circuit.mp4';
+import Permissions from './UserPermissions/Permissions';
 
 const isAuthenticated = !!localStorage.getItem('token');
 const expireDate = localStorage.getItem("expireDate");
@@ -103,6 +104,7 @@ function App() {
               <Route path="/users" element={<Users />} />
               <Route path="/roles" element={<Roles />} />
               <Route path="/myinformations" element={<MyInformations />} />
+              <Route path="/permissions" element={<Permissions />} />
             </Routes>
           </> :
           <>

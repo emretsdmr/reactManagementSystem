@@ -94,6 +94,7 @@ function UserRoles({ userIdForInfo, setUserIdForInfo, roleOpen, setRoleOpen }) {
                 <DialogTitle>Roles</DialogTitle>
                 <div className='box'>
                     <Button variant="outlined" color='inherit' onClick={() => setAddUserRoleOpen(true)}>+</Button>
+                    <br/><br/>
                     <TableContainer component={Paper}>
                         <Table aria-label="simple table">
                             <TableHead>
