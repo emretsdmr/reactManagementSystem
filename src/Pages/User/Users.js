@@ -20,6 +20,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Alert from 'react-bootstrap/Alert';
 import SearchIcon from '@mui/icons-material/Search';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import KeyIcon from '@mui/icons-material/Key';
+import EditPermission from './EditPermission';
 
 function Users() {
     const token = localStorage.getItem('token');
@@ -34,6 +36,9 @@ function Users() {
     const [alertOpen, setAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState();
     const [isAuthorized, setIsAuthorized] = useState(false);
+    const [editPermOpen, setEditPermOpen] = useState(false);
+    const [toBeEditedPerm, setToBeEditedPerm] = useState();
+    const [userClaims, setUserClaims] = useState([]);
 
     const handleInfo = (id) => {
         setInfoOpen(true);
@@ -76,7 +81,6 @@ function Users() {
 
     const findUserT = (value) => {
         users.map(user => {
-            ;debugger
             if ((user.userName).includes(value)) {                
                 filteredUsers.map(x => {       
                     ;debugger             
@@ -104,6 +108,20 @@ function Users() {
 
     const handleChangeValue = (value) => {
         findUserT(value);
+    }
+
+    const editPermission = (id) => {
+        setToBeEditedPerm(id);
+        axios.get(`https://localhost:7020/api/Permission/getUserPolicies?userId=${id}`, config)
+            .then(response => {
+                response.data.map(d => {
+                    setUserClaims((prev) => [...prev, {id: d.id, claimType:d.claimType, claimValue: d.claimValue}])
+                })
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        setEditPermOpen(true);
     }
 
     useEffect(() => {
@@ -147,6 +165,15 @@ function Users() {
                         setInfoOpen={setInfoOpen}
                     />
                 }
+                {editPermOpen &&
+                        <EditPermission
+                            setEditPermOpen={setEditPermOpen}
+                            editPermOpen={editPermOpen}
+                            toBeEditedPerm={toBeEditedPerm}
+                            userClaims={userClaims}
+                            setUserClaims={setUserClaims}
+                        />
+                    }
                 <Dialog open={deleteUserOpen && toBeDeleted} onClose={() => setToBeDeleted(null)}>
                     <DialogTitle>Are you sure to delete this user?</DialogTitle>
                     <DialogActions>
@@ -171,6 +198,7 @@ function Users() {
                                 <TableCell>Email</TableCell>
                                 <TableCell>Informations</TableCell>
                                 <TableCell>Role(s)</TableCell>
+                                <TableCell>Permissions</TableCell>
                                 <TableCell>Delete</TableCell>
                             </TableRow>
                         </TableHead>
@@ -187,7 +215,7 @@ function Users() {
                                         <TableCell>{filteredUser.userName}</TableCell>
                                         <TableCell>{filteredUser.email}</TableCell>
                                         <TableCell><button onClick={() => handleInfo(filteredUser.id)}>{filteredUser.informations.length}</button></TableCell>
-                                        <TableCell><button onClick={() => handleRoles(filteredUser.id)}><SupervisedUserCircleIcon /></button></TableCell>
+                                        <TableCell><button onClick={() => handleRoles(filteredUser.id)}><SupervisedUserCircleIcon /></button></TableCell>                                        
                                         <TableCell><button onClick={() => deleteUser(filteredUser.id)}><DeleteIcon /></button></TableCell>
                                     </TableRow>
                                 </> :
@@ -201,6 +229,7 @@ function Users() {
                                         <TableCell>{user.email}</TableCell>
                                         <TableCell><Button color='inherit' onClick={() => handleInfo(user.id)}>{user.informations.length}</Button></TableCell>
                                         <TableCell><Button color='inherit' onClick={() => handleRoles(user.id)}><SupervisedUserCircleIcon /></Button></TableCell>
+                                        <TableCell><Button color='inherit' onClick={() => editPermission(user.id)}><KeyIcon /></Button></TableCell>
                                         <TableCell><Button color='inherit' onClick={() => deleteUser(user.id)}><DeleteIcon /></Button></TableCell>
                                     </TableRow>
                                 ))}

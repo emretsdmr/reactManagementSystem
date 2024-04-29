@@ -30,7 +30,7 @@ function Roles() {
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [editPermOpen, setEditPermOpen] = useState(false);
     const [toBeEditedPerm, setToBeEditedPerm] = useState();
-    const [claims, setClaims] = useState([]);
+    const [roleClaims, setRoleClaims] = useState([]);
 
     const addRole = () => {
         setAddRoleOpen(true);
@@ -41,12 +41,26 @@ function Roles() {
         setToBeEdited(role);
     }
 
-    const editPermission = (id) => {
+    /*const editPermission = (id) => {
         setToBeEditedPerm(id);
         axios.get(`https://localhost:7020/api/Permission?roleId=${id}`, config)
             .then(response => {
                 response.data.map(d => {      
-                    setClaims(f => [...f,  d.value ])});                    
+                    setClaims(f => [...f,  d.claimValue ])});                    
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        setEditPermOpen(true);
+    }*/
+
+    const editPermission = (id) => {
+        setToBeEditedPerm(id);
+        axios.get(`https://localhost:7020/api/Permission/getRolePolicies?roleId=${id}`, config)
+            .then(response => {
+                response.data.map(d => {
+                    setRoleClaims((prev) => [...prev, {id: d.id, claimType:d.claimType, claimValue: d.claimValue}])
+                })
             })
             .catch(error => {
                 console.log(error);
@@ -114,8 +128,8 @@ function Roles() {
                             setEditPermOpen={setEditPermOpen}
                             editPermOpen={editPermOpen}
                             toBeEditedPerm={toBeEditedPerm}
-                            claims={claims}
-                            setClaims={setClaims}
+                            roleClaims={roleClaims}
+                            setRoleClaims={setRoleClaims}
                         />
                     }
                     <Dialog open={deleteOpen && toBeDeleted} onClose={() => setToBeDeleted(null)}>

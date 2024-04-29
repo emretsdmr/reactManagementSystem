@@ -13,24 +13,25 @@ import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 
-function EditPermission({ roleClaims, setRoleClaims, setEditPermOpen, editPermOpen, toBeEditedPerm }) {
+function EditPermission({ userClaims, setUserClaims, setEditPermOpen, editPermOpen, toBeEditedPerm }) {
     const token = localStorage.getItem('token');
     const [open, setOpen] = useState(editPermOpen);
     const [checked, setChecked] = useState(true);
+    const [data, setData] = useState([]);
     const [manageUser, setManageUser] = useState({
-        id: '',
-        claimType: '',
-        claimValue: ''
+        userId: toBeEditedPerm,
+        claimType: 'ManageUser',
+        claimValue: false,
     });
     const [manageRole, setManageRole] = useState({
-        id: '',
-        claimType: '',
-        claimValue: ''
+        userId: toBeEditedPerm,
+        claimType: 'ManageRoles',
+        claimValue: false
     });
     const [manageInfo, setManageInfo] = useState({
-        id: '',
-        claimType: '',
-        claimValue: ''
+        userId: toBeEditedPerm,
+        claimType: 'ManageInformations',
+        claimValue: false
     });
 
     const handleChange = (checked, claim) => {
@@ -47,44 +48,81 @@ function EditPermission({ roleClaims, setRoleClaims, setEditPermOpen, editPermOp
 
     const handleClose = () => {
         setEditPermOpen(false);
-        setRoleClaims([]);
+        setUserClaims([]);
     };
 
     const config = {
         headers: { Authorization: `Bearer ${token}` }
-    };    
+    };
 
-    const handleSubmit = () => {
-        axios.put(`https://localhost:7020/api/Permission/updateRolePolicies?roleId=${toBeEditedPerm}`, [manageInfo,manageUser,manageRole], config)
+    const postRequestForPolicy = () => {
+        ; debugger
+        axios.put(`https://localhost:7020/api/Permission/edituserPolicy`, data, config)
             .then(response => {
                 console.log(response);
-                setOpen(false);
-                window.location.reload();
             })
             .catch(error => {
                 console.log(error);
             });
     }
 
-    useEffect(() => {
-        roleClaims.map(claim => {
-            if (claim.claimType == "ManageUser") {
-                setManageUser({ ...manageUser, id: claim.id, claimType: claim.claimType, claimValue: claim.claimValue ==='True' ? true : false });
+    const handleSubmit = () => {
+        [manageUser, manageRole, manageInfo].map(claim => {
+            if (claim.claimType == 'ManageUser') {
+                if (claim.claimValue === true) {
+                    setData((prev) => [...prev, { ...claim, claimValue: 'True' }])
+                }
+                else {
+                    setData((prev) => [...prev, { ...claim, claimValue: 'False' }])
+                }
             }
-            if (claim.claimType == "ManageInformations") {
-                setManageInfo({ ...manageUser, id: claim.id, claimType: claim.claimType, claimValue: claim.claimValue ==='True' ? true : false });
+            if (claim.claimType == 'ManageRoles') {
+                if (claim.claimValue === true) {
+                    setData((prev) => [...prev, { ...claim, claimValue: 'True' }])
+                }
+                else {
+                    setData((prev) => [...prev, { ...claim, claimValue: 'False' }])
+                }
             }
-            if (claim.claimType == "ManageRoles") {
-                setManageRole({ ...manageUser, id: claim.id, claimType: claim.claimType, claimValue: claim.claimValue ==='True' ? true : false });
+            if (claim.claimType == 'ManageInformations') {
+                if (claim.claimValue === true) {
+                    setData((prev) => [...prev, { ...claim, claimValue: 'True' }])
+                }
+                else {
+                    setData((prev) => [...prev, { ...claim, claimValue: 'False' }])
+                }
+
             }
         })
-    }, [roleClaims]);
+    }
+
+    useEffect(() => {
+        userClaims.map(claim => {
+            if (claim.claimType == "ManageUser") {
+                setManageUser({ ...manageUser, id: claim.id, claimType: claim.claimType, claimValue: claim.claimValue == 'True' ? true : false });
+            }
+            if (claim.claimType == "ManageInformations") {
+                setManageInfo({ ...manageInfo, id: claim.id, claimType: claim.claimType, claimValue: claim.claimValue == 'True' ? true : false });
+            }
+            if (claim.claimType == "ManageRoles") {
+                setManageRole({ ...manageRole, id: claim.id, claimType: claim.claimType, claimValue: claim.claimValue == 'True' ? true : false });
+            }
+        })
+    }, [userClaims]);
+
+    useEffect(() => {
+        if (data.length > 0) {
+            postRequestForPolicy();
+        }
+    }, [data])
+
 
     return (
         <Dialog open={open} onClose={handleClose}>
             <div className="editPerm">
                 <DialogTitle>Edit Permissions</DialogTitle>
                 <FormGroup>
+                    {/*[manageUser,manageInfo,manageUser].map(claim => )*/}
                     <FormControlLabel
                         control={
                             <Checkbox checked={manageRole.claimValue} onChange={(event) => handleChange(event.target.checked, 'manageRole')} />
