@@ -113,6 +113,8 @@ function EditPermission({ userClaims, setUserClaims, setEditPermOpen, editPermOp
     useEffect(() => {
         if (data.length > 0) {
             postRequestForPolicy();
+            setOpen(false);
+            window.location.reload();
         }
     }, [data])
 
@@ -121,8 +123,7 @@ function EditPermission({ userClaims, setUserClaims, setEditPermOpen, editPermOp
         <Dialog open={open} onClose={handleClose}>
             <div className="editPerm">
                 <DialogTitle>Edit Permissions</DialogTitle>
-                <FormGroup>
-                    {/*[manageUser,manageInfo,manageUser].map(claim => )*/}
+                <FormGroup>                    
                     <FormControlLabel
                         control={
                             <Checkbox checked={manageRole.claimValue} onChange={(event) => handleChange(event.target.checked, 'manageRole')} />
